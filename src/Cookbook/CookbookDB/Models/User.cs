@@ -8,7 +8,7 @@ public partial class User
     /// <summary>
     /// идентификатор пользователя
     /// </summary>
-    public int Id { get; set; }
+    public long Id { get; set; }
 
     /// <summary>
     /// имя пользователя

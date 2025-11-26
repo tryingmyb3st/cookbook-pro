@@ -8,7 +8,7 @@ public partial class Ingredient
     /// <summary>
     /// идентификатор ингредиента
     /// </summary>
-    public int Id { get; set; }
+    public long Id { get; set; }
 
     /// <summary>
     /// название ингредиента

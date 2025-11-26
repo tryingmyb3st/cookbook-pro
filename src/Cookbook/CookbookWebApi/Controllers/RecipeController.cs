@@ -1,5 +1,5 @@
 using AutoMapper;
-using CookbookDB.DTO;
+using CookbookCommon.DTO;
 using CookbookDB.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,7 +35,7 @@ public class RecipeController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<int> Create(Recipe recipe)
+    public async Task<long> Create(RecipeCreate recipe)
     {
         var id = await _recipeRepository.AddRecipeAsync(recipe);
         return id;

@@ -8,7 +8,7 @@ public partial class List
     /// <summary>
     /// идентификатор списка
     /// </summary>
-    public int Id { get; set; }
+    public long Id { get; set; }
 
     /// <summary>
     /// название списка
@@ -18,7 +18,7 @@ public partial class List
     /// <summary>
     /// идентификатор пользователя
     /// </summary>
-    public int? UserId { get; set; }
+    public long? UserId { get; set; }
 
     /// <summary>
     /// описание

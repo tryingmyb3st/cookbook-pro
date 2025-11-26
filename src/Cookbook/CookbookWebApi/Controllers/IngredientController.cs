@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using CookbookDB.DTO;
+using CookbookCommon.DTO;
 using CookbookDB.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,6 +27,11 @@ public class IngredientController: ControllerBase
         return _mapper.Map<IngredientBase>(ingredient);
     }
 
+    /// <summary>
+    /// todo: IngredientBase[] searchMany with ilike
+    /// </summary>
+    /// <param name="ingredientName"></param>
+    /// <returns></returns>
     [HttpPost("search")]
     public async Task<IngredientBase> Search(string ingredientName)
     {
@@ -35,7 +40,7 @@ public class IngredientController: ControllerBase
     }
 
     [HttpPost]
-    public async Task<int> Create(IngredientBase ingredient)
+    public async Task<long> Create(IngredientBase ingredient)
     {
         var id = await _ingredientRepository.AddIngredientAsync(ingredient);
         return id;

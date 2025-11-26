@@ -1,4 +1,4 @@
-﻿namespace CookbookDB.DTO;
+﻿namespace CookbookCommon.DTO;
 
 public class Recipe: RecipeBase
 {

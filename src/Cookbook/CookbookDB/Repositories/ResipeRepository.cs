@@ -23,122 +23,47 @@ public class RecipeRepository(CookbookDbContext context)
             .FirstOrDefaultAsync(r => r.Name == name);
     }
 
-    public async Task<int> AddRecipeAsync(DTO.Recipe recipeDto)
+    public async Task<long> AddRecipeAsync(CookbookCommon.DTO.RecipeCreate recipeCreate)
     {
+        var ingredientIds = recipeCreate.Ingredients.Select(i => i.IngredientId);
+        var existingIngredients = _context.Ingredients.Where(i => ingredientIds.Contains(i.Id));
+
+        var notFoundIngredients = ingredientIds.Except(existingIngredients.Select(i => i.Id));
+
+        if (notFoundIngredients.Any())
+        {
+            throw new Exception("Не найден(ы) ингредиент(ы) по идентификатору: " +
+                string.Join(", ", notFoundIngredients.Select(i => i.ToString())));
+        }
+
+        var duplicates = ingredientIds.GroupBy(i => i).Where(g => g.Count() > 1).Select(g => g.Key);
+
+        if (duplicates.Any())
+        {
+            throw new Exception("Дублирование ингредиента(ов) по идентификатору: " +
+               string.Join(", ", duplicates.Select(i => i.ToString())));
+        }
+
         var recipe = new Recipe
         {
-            Name = recipeDto.Name,
-            Instruction = recipeDto.Instruction,
-            ServingsNumber = recipeDto.ServingsNumber
+            Name = recipeCreate.Name,
+            Instruction = recipeCreate.Instruction,
+            ServingsNumber = recipeCreate.ServingsNumber,
         };
 
         await _context.Recipes.AddAsync(recipe);
-        await _context.SaveChangesAsync();
 
-        foreach (var ingredientDto in recipeDto.Ingredients)
-        {
-            Models.Ingredient? existingIngredient;
-            RecipeIngredient recipeIngredient;
-
-            //если ингредиент уже есть и передали id
-            if (ingredientDto.Id.HasValue)
+        var id = recipe.Id;
+        recipe.RecipeIngredients = recipeCreate.Ingredients
+            .Select(i => new RecipeIngredient
             {
-                existingIngredient = await _context.Ingredients
-               .FirstOrDefaultAsync(i => i.Id == ingredientDto.Id);
-                if (existingIngredient != null)
-                {
-                    recipeIngredient = new RecipeIngredient
-                    {
-                        RecipeId = recipe.Id,
-                        IngredientId = existingIngredient!.Id,
-                        Weight = ingredientDto.Weight
-                    };
-
-                    await _context.RecipeIngredients.AddAsync(recipeIngredient);
-                    continue;
-                }
-            }
-
-            //если id не передали или по нему не нашли (рецепт из themeal), пробуем найти по имени
-            existingIngredient = await _context.Ingredients
-                .FirstOrDefaultAsync(i => i.Name == ingredientDto.Name);
-
-            Models.Ingredient ingredient;
-
-            if (existingIngredient != null)
-            {
-                ingredient = existingIngredient;
-            }
-            else
-            {
-                //по имени тоже не нашли - создаем новый, потом придется заполнить информацию
-                //todo: в dto хранить список id ингрдиентов, а не сущностей
-                ingredient = new Models.Ingredient
-                {
-                    Name = ingredientDto.Name
-                };
-
-                await _context.Ingredients.AddAsync(ingredient);
-                await _context.SaveChangesAsync();
-            }
-
-            recipeIngredient = new RecipeIngredient
-            {
-                RecipeId = recipe.Id,
-                IngredientId = ingredient.Id,
-                Weight = ingredientDto.Weight
-            };
-
-            await _context.RecipeIngredients.AddAsync(recipeIngredient);
-        }
+                RecipeId = id,
+                IngredientId = i.IngredientId,
+                Weight = i.Weight,
+            }).ToArray();
 
         await _context.SaveChangesAsync();
 
         return recipe.Id;
     }
-
-    //public async Task InsertRecipeAsync(DTO.Recipe recipe)
-    //{
-    //    // Ensure the recipe and its ingredients get added to the database
-    //    //var existingRecipe = await _context.Recipes.FirstOrDefaultAsync(r => r.Name == recipe.Name);
-    //    //if (existingRecipe == null)
-    //    //{
-    //    Recipe recipeModel = new()
-    //    {
-    //        Id = recipe.Id,
-    //        Name = recipe.Name
-    //    };
-    //    var insertedRecipe = await _context.Recipes.AddAsync(recipeModel);
-    //    var existingRecipe = await _context.Recipes.FirstOrDefaultAsync(r => r.Name == recipe.Name);
-    //    //await _context.SaveChangesAsync(); // Save the recipe first to generate an ID for the recipe
-    //    foreach (var ingredient in recipe.Ingredients)
-    //    {
-    //        // Check if the ingredient already exists
-    //        var existingIngredient = await _context.Ingredients.FirstOrDefaultAsync(i => i.Name == ingredient.Name);
-    //        if (existingIngredient == null)
-    //        {
-    //            // Assuming you want to store additional nutritional information
-    //            existingIngredient = new Models.Ingredient
-    //            {
-    //                Name = ingredient.Name,
-    //            };
-    //            await _context.Ingredients.AddAsync(existingIngredient);
-    //            //await _context.SaveChangesAsync(); // Save the ingredient to generate an ID
-    //            //existingIngredient = await _context.Ingredients.FirstOrDefaultAsync(i => i.Name == ingredient.Name);
-    //        }
-    //        recipeModel.RecipeIngredients.Add(new RecipeIngredient
-    //        {
-    //            //RecipeId = insertedRecipe.Entity.Id,
-    //            //IngredientId = existingIngredient!.Id, // Use existing or newly added ingredient
-    //            Ingredient = existingIngredient,
-    //            Weight = ingredient.Weight
-    //        });
-
-
-    //        //await _context.RecipeIngredients.AddAsync(recipeIngredient);
-    //        //}
-
-    //        await _context.SaveChangesAsync(); // Save all the recipe ingredients
-    //    }
-    //}
 }

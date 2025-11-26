@@ -7,7 +7,7 @@ namespace CookbookWebApi.Mapping
     {
         public IngredientProfile()
         {
-            CreateMap<Ingredient, CookbookDB.DTO.IngredientBase>();
+            CreateMap<Ingredient, CookbookCommon.DTO.IngredientBase>();
         }
     }
 }

@@ -7,16 +7,16 @@ namespace CookbookWebApi.Mapping
     {
         public RecipeProfile()
         {
-            CreateMap<Recipe, CookbookDB.DTO.Recipe>()
+            CreateMap<Recipe, CookbookCommon.DTO.Recipe>()
                 .ForMember(dest => dest.Ingredients,
                     opt => opt.MapFrom((src, dest, destMember, context) => MapIngredients(src)));
         }
 
-        private static List<CookbookDB.DTO.Ingredient> MapIngredients(Recipe source)
+        private static List<CookbookCommon.DTO.Ingredient> MapIngredients(Recipe source)
         {
             return source.RecipeIngredients.Select(ri =>
             { 
-                return new CookbookDB.DTO.Ingredient
+                return new CookbookCommon.DTO.Ingredient
                 {
                     Id = ri.IngredientId,
                     Name = ri.Ingredient.Name,

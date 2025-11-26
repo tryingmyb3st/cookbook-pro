@@ -17,7 +17,7 @@ public class IngredientRepository(CookbookDbContext context)
         return await _context.Ingredients.FirstOrDefaultAsync(i => i.Name == name);
     }
 
-    public async Task<int> AddIngredientAsync(DTO.IngredientBase ingredientDto)
+    public async Task<long> AddIngredientAsync(CookbookCommon.DTO.IngredientBase ingredientDto)
     {
         var ingredient = new Ingredient
         {

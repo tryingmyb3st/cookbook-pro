@@ -5,9 +5,9 @@
 /// </summary>
 public partial class RecipeIngredient
 {
-    public int RecipeId { get; set; }
+    public long RecipeId { get; set; }
 
-    public int IngredientId { get; set; }
+    public long IngredientId { get; set; }
 
     public decimal? Weight { get; set; }
 

@@ -14,6 +14,15 @@ public partial class CookbookDbContext : DbContext
     {
     }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            // Укажите вашу строку подключения к PostgreSQL
+            optionsBuilder.UseNpgsql("Host=localhost;Database=cookbook;Username=cookbook_user;Password=cookbook_user");
+        }
+    }
+
     public virtual DbSet<Ingredient> Ingredients { get; set; }
 
     public virtual DbSet<List> Lists { get; set; }

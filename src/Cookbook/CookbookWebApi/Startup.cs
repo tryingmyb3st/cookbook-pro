@@ -17,6 +17,21 @@ namespace CookbookWebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("ReactApp", policy =>
+                {
+                    policy.WithOrigins(
+                        "http://localhost:5173",
+                        "http://localhost:3000",
+                        "http://localhost:5144"
+                    )
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+                });
+            });
+
             services.AddDbContext<CookbookDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
@@ -61,6 +76,7 @@ namespace CookbookWebApi
 
             app.UseStaticFiles();
             app.UseRouting();
+            app.UseCors("ReactApp");
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

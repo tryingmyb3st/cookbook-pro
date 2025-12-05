@@ -14,15 +14,6 @@ public partial class CookbookDbContext : DbContext
     {
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        if (!optionsBuilder.IsConfigured)
-        {
-            // Укажите вашу строку подключения к PostgreSQL
-            optionsBuilder.UseNpgsql("Host=localhost;Database=cookbook;Username=cookbook_user;Password=cookbook_user");
-        }
-    }
-
     public virtual DbSet<Ingredient> Ingredients { get; set; }
 
     public virtual DbSet<List> Lists { get; set; }
@@ -125,6 +116,10 @@ public partial class CookbookDbContext : DbContext
             entity.Property(e => e.Weight)
                 .HasComment("вес всего блюда")
                 .HasColumnName("weight");
+            entity.Property(e => e.FileName)
+               .HasComment("имя файла")
+               .HasColumnType("character varying")
+               .HasColumnName("file_name");
         });
 
         modelBuilder.Entity<RecipeIngredient>(entity =>

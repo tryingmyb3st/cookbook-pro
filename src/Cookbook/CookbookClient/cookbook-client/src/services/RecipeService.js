@@ -3,19 +3,19 @@ import { api } from './api';
 export const ingredientService = {
   // Получить рецепт по ID
   async getRecipeById(id) {
-    const response = await api.get(`/cookbook/Recipe/${id}`);
+    const response = await api.get(`/cookbook/Recipe/Get?id=${encodeURIComponent(id)}`);
     return response.data;
   },
 
-  // Получить рецепт по названию
+  // Получить рецепты по названию
   async getRecipeByName(name) {
-    const response = await api.post(`/cookbook/Recipe/search?ingredientName=${encodeURIComponent(name)}`);
+    const response = await api.get(`/cookbook/Recipe/Search?name=${encodeURIComponent(name)}`);
     return response.data;
   },
 
   // Создать новый рецепт
   async createRecipe(ingredientData) {
-    const response = await api.post('/cookbook/Recipe', ingredientData);
+    const response = await api.post('/cookbook/Recipe/Create', ingredientData);
     return response.data;
   },
 

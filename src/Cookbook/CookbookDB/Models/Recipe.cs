@@ -13,7 +13,7 @@ public partial class Recipe
     /// <summary>
     /// название рецепта
     /// </summary>
-    public string? Name { get; set; }
+    public string Name { get; set; }
 
     /// <summary>
     /// вес всего блюда
@@ -29,6 +29,11 @@ public partial class Recipe
     /// инструкция приготовления
     /// </summary>
     public string? Instruction { get; set; }
+
+    /// <summary>
+    /// имя файла
+    /// </summary>
+    public string? FileName { get; set; }
 
     public virtual ICollection<RecipeIngredient> RecipeIngredients { get; set; } = new List<RecipeIngredient>();
 }

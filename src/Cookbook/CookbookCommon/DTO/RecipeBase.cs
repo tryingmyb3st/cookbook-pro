@@ -11,4 +11,6 @@ public class RecipeBase
     public int? ServingsNumber { get; set; }
 
     public string Instruction { get; set; } = string.Empty;
+
+    public string? FileName { get; set; } = string.Empty;
 }

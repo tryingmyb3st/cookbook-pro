@@ -2,6 +2,7 @@
 using CookbookDB;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CookbookDB.Migrations
 {
     [DbContext(typeof(CookbookDbContext))]
-    partial class CookbookDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251205103715_AddRecipeFileNameField")]
+    partial class AddRecipeFileNameField
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -140,7 +143,6 @@ namespace CookbookDB.Migrations
                         .HasComment("инструкция приготовления");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("character varying")
                         .HasColumnName("name")
                         .HasComment("название рецепта");

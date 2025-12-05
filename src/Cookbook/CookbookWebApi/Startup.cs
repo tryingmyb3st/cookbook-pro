@@ -1,8 +1,12 @@
 ﻿using CookbookDB;
-using Microsoft.OpenApi.Models;
-using Microsoft.EntityFrameworkCore;
 using CookbookDB.Repositories;
+using CookbookFileStorage;
 using CookbookWebApi.Mapping;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using Minio;
+using MinioConfig = CookbookFileStorage.MinioConfig;
 
 namespace CookbookWebApi
 {
@@ -38,11 +42,17 @@ namespace CookbookWebApi
             services.AddScoped<RecipeRepository>();
             services.AddScoped<IngredientRepository>();
 
+            ConfigureMinio(services);
+
+            services.Configure<FormOptions>(options =>
+            {
+                options.MultipartBodyLengthLimit = 20 * 1024 * 1024;
+            });
+
             services.AddAutoMapper(cfg =>
             {
                 cfg.AddProfile(new RecipeProfile());
                 cfg.AddProfile(new IngredientProfile());
-
             });
 
             services.AddControllers();
@@ -57,7 +67,40 @@ namespace CookbookWebApi
                     Version = "v1",
                     Description = "API для кулинарных рецептов"
                 });
+
+                c.OperationFilter<MinioFileOperationFilter>();
             });
+        }
+
+        private void ConfigureMinio(IServiceCollection services)
+        {
+            var minioConfig = new MinioConfig();
+            Configuration.GetSection("Minio").Bind(minioConfig);
+            services.AddSingleton(minioConfig);
+
+            services.AddSingleton(serviceProvider =>
+            {
+                var config = serviceProvider.GetRequiredService<MinioConfig>();
+
+                var minioClient = new MinioClient()
+                    .WithEndpoint(config.Endpoint)
+                    .WithCredentials(config.AccessKey, config.SecretKey)
+                    .WithSSL(config.UseSsl);
+
+                if (!string.IsNullOrEmpty(config.Region))
+                {
+                    minioClient = minioClient.WithRegion(config.Region);
+                }
+
+                if (config.TimeoutSeconds > 0)
+                {
+                    minioClient = minioClient.WithTimeout(config.TimeoutSeconds * 1000);
+                }
+
+                return minioClient.Build();
+            });
+
+            services.AddScoped<IFileService, MinioService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -83,6 +126,18 @@ namespace CookbookWebApi
             {
                 endpoints.MapControllers();
             });
+
+            InitializeMinio(app);
+        }
+
+        private static async void InitializeMinio(IApplicationBuilder app)
+        {
+            using var scope = app.ApplicationServices.CreateScope();
+
+            var minioService = scope.ServiceProvider.GetRequiredService<IFileService>();
+            var config = scope.ServiceProvider.GetRequiredService<MinioConfig>();
+
+            await minioService.CreateBucketIfNotExistsAsync(config.BucketName);
         }
     }
 }

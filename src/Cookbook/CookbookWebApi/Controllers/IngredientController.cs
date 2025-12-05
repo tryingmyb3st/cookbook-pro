@@ -6,41 +6,31 @@ using Microsoft.AspNetCore.Mvc;
 namespace CookbookWebApi.Controllers;
 
 [ApiController]
-[Route("cookbook/[controller]")]
-public class IngredientController: ControllerBase
+[Route("cookbook/[controller]/[action]")]
+public class IngredientController(
+    IngredientRepository ingredientRepository,
+    IMapper mapper): ControllerBase
 {
-    private readonly IngredientRepository _ingredientRepository;
+    private readonly IngredientRepository _ingredientRepository = ingredientRepository;
 
-    private readonly ILogger<IngredientController> _logger;
-    private readonly IMapper _mapper;
-    public IngredientController(IngredientRepository ingredientRepository, ILogger<IngredientController> logger, IMapper mapper)
-    {
-        _ingredientRepository = ingredientRepository;
-        _logger = logger;
-        _mapper = mapper;
-    }
+    private readonly IMapper _mapper = mapper;
 
-    [HttpGet("{ingredientId:int}")]
-    public async Task<IngredientBase> Get(int ingredientId)
+    [HttpGet]
+    public async Task<IngredientBase> Get([FromQuery] int id)
     {
-        var ingredient = await _ingredientRepository.Get(ingredientId);
+        var ingredient = await _ingredientRepository.Get(id);
         return _mapper.Map<IngredientBase>(ingredient);
     }
 
-    /// <summary>
-    /// todo: IngredientBase[] searchMany with ilike
-    /// </summary>
-    /// <param name="ingredientName"></param>
-    /// <returns></returns>
-    [HttpPost("search")]
-    public async Task<IngredientBase> Search(string ingredientName)
+    [HttpGet]
+    public async Task<IngredientBase[]> Search([FromQuery] string name)
     {
-        var ingredient = await _ingredientRepository.Get(ingredientName);
-        return _mapper.Map<IngredientBase>(ingredient);
+        var ingredients = await _ingredientRepository.Search(name);
+        return ingredients.Select(_mapper.Map<IngredientBase>).ToArray();
     }
 
     [HttpPost]
-    public async Task<long> Create(IngredientBase ingredient)
+    public async Task<long> Create(IngredientCreate ingredient)
     {
         var id = await _ingredientRepository.AddIngredientAsync(ingredient);
         return id;

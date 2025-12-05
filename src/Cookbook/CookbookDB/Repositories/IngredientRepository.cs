@@ -12,20 +12,22 @@ public class IngredientRepository(CookbookDbContext context)
         return await _context.Ingredients.FirstOrDefaultAsync(i => i.Id == id);
     }
 
-    public async Task<Ingredient?> Get(string name)
+    public async Task<Ingredient[]?> Search(string name)
     {
-        return await _context.Ingredients.FirstOrDefaultAsync(i => i.Name == name);
+        return await _context.Ingredients
+            .Where(i => i.Name.Contains(name))
+            .ToArrayAsync();
     }
 
-    public async Task<long> AddIngredientAsync(CookbookCommon.DTO.IngredientBase ingredientDto)
+    public async Task<long> AddIngredientAsync(CookbookCommon.DTO.IngredientCreate ingredientCreate)
     {
         var ingredient = new Ingredient
         {
-            Name = ingredientDto.Name,
-            Protein = ingredientDto.Protein,
-            Fats = ingredientDto.Fats,
-            Carbs = ingredientDto.Carbs,
-            Calories = ingredientDto.Calories,
+            Name = ingredientCreate.Name,
+            Protein = ingredientCreate.Protein,
+            Fats = ingredientCreate.Fats,
+            Carbs = ingredientCreate.Carbs,
+            Calories = ingredientCreate.Calories,
         };
 
         await _context.Ingredients.AddAsync(ingredient);

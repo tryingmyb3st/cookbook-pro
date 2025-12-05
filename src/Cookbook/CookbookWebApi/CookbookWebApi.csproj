@@ -25,6 +25,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\CookbookCommon\CookbookCommon.csproj" />
 		<ProjectReference Include="..\CookbookDB\CookbookDB.csproj" />
+		<ProjectReference Include="..\CookbookFileStorage\CookbookFileStorage.csproj" />
 	</ItemGroup>
 
 </Project>

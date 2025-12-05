@@ -6,32 +6,25 @@ using Microsoft.AspNetCore.Mvc;
 namespace CookbookWebApi.Controllers;
 
 [ApiController]
-[Route("cookbook/[controller]")]
-public class RecipeController : ControllerBase
+[Route("cookbook/[controller]/[action]")]
+public class RecipeController(RecipeRepository recipeRepository, IMapper mapper) : ControllerBase
 {
-    private readonly RecipeRepository _recipeRepository;
+    private readonly RecipeRepository _recipeRepository = recipeRepository;
 
-    private readonly ILogger<RecipeController> _logger;
-    private readonly IMapper _mapper;
-    public RecipeController(RecipeRepository recipeRepository, ILogger<RecipeController> logger, IMapper mapper)
-    {
-        _recipeRepository = recipeRepository;
-        _logger = logger;
-        _mapper = mapper;
-    }
+    private readonly IMapper _mapper = mapper;
 
-    [HttpGet("{recipeId:int}")]
-    public async Task<Recipe> Get(int recipeId)
+    [HttpGet]
+    public async Task<Recipe> Get([FromQuery] int id)
     {
-        var recipe = await _recipeRepository.Get(recipeId);
+        var recipe = await _recipeRepository.Get(id);
         return _mapper.Map<Recipe>(recipe);
     }
 
-    [HttpPost("search")]
-    public async Task<Recipe> Search(string recipeName)
+    [HttpGet]
+    public async Task<Recipe[]> Search([FromQuery] string name)
     {
-        var recipe = await _recipeRepository.Get(recipeName);
-        return _mapper.Map<Recipe>(recipe);
+        var recipes = await _recipeRepository.Search(name);
+        return recipes.Select(_mapper.Map<Recipe>).ToArray();
     }
 
     [HttpPost]
@@ -39,5 +32,17 @@ public class RecipeController : ControllerBase
     {
         var id = await _recipeRepository.AddRecipeAsync(recipe);
         return id;
+    }
+
+    [HttpPost]
+    public async Task Update(RecipeUpdate recipe)
+    {
+        await _recipeRepository.UpdateRecipeAsync(recipe);
+    }
+
+    [HttpDelete]
+    public async Task Delete([FromQuery] long id)
+    {
+        await _recipeRepository.DeleteRecipeAsync(id);
     }
 }

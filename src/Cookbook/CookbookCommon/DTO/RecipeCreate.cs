@@ -14,7 +14,8 @@ public class RecipeCreate
     public string Instruction { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Список ингредиентов не может быть пустым")]
+    [MinLength(1, ErrorMessage = "Список ингредиентов не может быть пустым")]
     public IEnumerable<RecipeIngredient> Ingredients { get; set; } = [];
 
-    public record RecipeIngredient(long IngredientId, decimal Weight);
+    public string? FileName { get; set; } = string.Empty;
 }

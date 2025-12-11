@@ -1,15 +1,17 @@
 using AutoMapper;
 using CookbookCommon.DTO;
 using CookbookDB.Repositories;
+using CookbookTheMealDB;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CookbookWebApi.Controllers;
 
 [ApiController]
 [Route("cookbook/[controller]/[action]")]
-public class RecipeController(RecipeRepository recipeRepository, IMapper mapper) : ControllerBase
+public class RecipeController(RecipeRepository recipeRepository, IMealDBService mealDBService, IMapper mapper) : ControllerBase
 {
     private readonly RecipeRepository _recipeRepository = recipeRepository;
+    private readonly IMealDBService _mealDBService = mealDBService;
 
     private readonly IMapper _mapper = mapper;
 
@@ -44,5 +46,11 @@ public class RecipeController(RecipeRepository recipeRepository, IMapper mapper)
     public async Task Delete([FromQuery] long id)
     {
         await _recipeRepository.DeleteRecipeAsync(id);
+    }
+
+    [HttpGet]
+    public async Task<Recipe?> GetRandomFromTheMealDB()
+    {
+        return await _mealDBService.GetRandomRecipeAsync();
     }
 }

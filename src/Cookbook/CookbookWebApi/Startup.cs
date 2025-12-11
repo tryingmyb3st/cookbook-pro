@@ -1,6 +1,7 @@
 ﻿using CookbookDB;
 using CookbookDB.Repositories;
 using CookbookFileStorage;
+using CookbookTheMealDB;
 using CookbookWebApi.Mapping;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
@@ -101,6 +102,13 @@ namespace CookbookWebApi
             });
 
             services.AddScoped<IFileService, MinioService>();
+
+            services.AddHttpClient<IMealDBService, MealDBService>(client =>
+            {
+                client.BaseAddress = new Uri("https://www.themealdb.com/api/json/v1/1/");
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+                client.Timeout = TimeSpan.FromSeconds(30);
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

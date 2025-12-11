@@ -19,6 +19,33 @@ public class IngredientRepository(CookbookDbContext context)
             .ToArrayAsync();
     }
 
+    public async Task<List<Ingredient>> AddAndGetMany(List<string> ingredientNames)
+    {
+        if (ingredientNames == null || ingredientNames.Count == 0)
+            return [];
+
+        var ingredients = await _context.Ingredients
+            .Where(i => ingredientNames.Contains(i.Name))
+            .ToListAsync();
+
+        foreach (var newIngredient in ingredientNames.Except(ingredients.Select(i=> i.Name)))
+        {
+            var ingredient = new Ingredient
+            {
+                Name = newIngredient,
+                Protein = 0,
+                Fats = 0,
+                Carbs = 0,
+                Calories = 0,
+            };
+            await _context.Ingredients.AddAsync(ingredient);
+            ingredients.Add(ingredient);
+        }
+
+        await _context.SaveChangesAsync();
+        return ingredients;
+    }
+
     public async Task<long> AddIngredientAsync(CookbookCommon.DTO.IngredientCreate ingredientCreate)
     {
         var ingredient = new Ingredient

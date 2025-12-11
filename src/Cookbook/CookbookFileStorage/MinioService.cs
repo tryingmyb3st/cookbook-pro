@@ -110,7 +110,7 @@ public class MinioService(IMinioClient minioClient, MinioConfig config) : IFileS
             memoryStream.Position = 0;
             return memoryStream;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             throw;
         }

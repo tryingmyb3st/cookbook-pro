@@ -87,6 +87,39 @@ public class AuthController: ControllerBase
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var user = await _userManager.FindByIdAsync(userId!);
 
-        return Ok(user);
+        if (user == null)
+            return NotFound();
+
+        return Ok(new CookbookCommon.DTO.User
+        {
+            Id = user.Id,
+            UserName = user.UserName,
+            Email = user.Email,
+            EmailConfirmed = user.EmailConfirmed,
+            PhoneNumber = user.PhoneNumber,
+            PhoneNumberConfirmed = user.PhoneNumberConfirmed,
+            TwoFactorEnabled = user.TwoFactorEnabled,
+        });
+    }
+
+    [HttpGet]
+    [AllowAnonymous]
+    public async Task<IActionResult> Get([FromQuery] long userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+
+        if (user == null)
+            return NotFound();
+
+        return Ok(new CookbookCommon.DTO.User
+        {
+            Id = user.Id,
+            UserName = user.UserName,
+            Email = user.Email,
+            EmailConfirmed = user.EmailConfirmed,
+            PhoneNumber = user.PhoneNumber,
+            PhoneNumberConfirmed = user.PhoneNumberConfirmed,
+            TwoFactorEnabled = user.TwoFactorEnabled,
+        });
     }
 }

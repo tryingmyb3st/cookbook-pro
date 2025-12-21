@@ -21,7 +21,14 @@ export const useRecipeImage = (recipe) => {
 
         const fileName = recipe.fileName;
 
-        const imageBlob = await FileService.getImage(fileName);
+        const token = localStorage.getItem('token');
+        
+        const authHeaders = {};
+        if (token) {
+          authHeaders['Authorization'] = `Bearer ${token}`;
+        }
+
+        const imageBlob = await FileService.getImage(fileName, authHeaders);
 
         if (imageBlobUrlRef.current) {
           URL.revokeObjectURL(imageBlobUrlRef.current);

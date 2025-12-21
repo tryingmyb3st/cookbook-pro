@@ -48,7 +48,6 @@
     height: fit-content;
 }
 
-/* Когда форма скрыта */
 .my-recipes-page-add-recipe-card:empty {
     display: none;
 }

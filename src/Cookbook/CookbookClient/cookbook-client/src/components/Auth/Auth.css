@@ -1,0 +1,31 @@
+.auth-container {
+    background-color: #F5F5F5;
+    padding: 40px;
+}
+
+.auth-form h2 {
+    margin-bottom: 20px;
+}
+
+.auth-form .form-group {
+    margin-bottom: 20px;
+}
+
+.auth-form .auth-button {
+    border: 1px solid;
+    border-radius: 10px;
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #F8B600;
+    color: white;
+    font-weight: 500;
+}
+
+.auth-form .auth-link {
+    color: #333;
+}
+
+.error-message {
+    text-align: center;
+    color: rgb(233, 23, 23);
+}

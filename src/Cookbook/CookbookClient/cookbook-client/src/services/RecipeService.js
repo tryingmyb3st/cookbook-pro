@@ -10,6 +10,7 @@ export const RecipeService = {
   // Получить рецепты по названию
   async getRecipeByName(name) {
     const response = await api.get(`/cookbook/Recipe/Search?name=${encodeURIComponent(name)}`);
+    console.log(response.data);
     return response.data;
   },
 

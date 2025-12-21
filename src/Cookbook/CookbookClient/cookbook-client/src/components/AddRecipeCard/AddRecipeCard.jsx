@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { RecipeService } from '../../services/RecipeService';
 import { ingredientService } from '../../services/ingredientService';
 import './AddRecipeCard.css';
+import UploadImage from '../UploadImage/UploadImage';
 
 export default function AddRecipeCard({ onCancel, onSuccess }) {
   const [formData, setFormData] = useState({
@@ -15,6 +16,19 @@ export default function AddRecipeCard({ onCancel, onSuccess }) {
   const [ingredientSuggestions, setIngredientSuggestions] = useState([]);
   const [searchTimeout, setSearchTimeout] = useState(null);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
+
+  const handleImageUploadSuccess = (fileName) => {
+    console.log('Изображение загружено, fileName:', fileName);
+    setFormData(prev => ({
+      ...prev,
+      fileName: fileName
+    }));
+  };
+
+  const handleImageUploadError = (error) => {
+    console.error('Ошибка загрузки изображения:', error);
+    alert(`Ошибка загрузки изображения: ${error.message}`);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -131,6 +145,11 @@ export default function AddRecipeCard({ onCancel, onSuccess }) {
       alert('Пожалуйста, введите инструкцию приготовления');
       return;
     }
+
+    if (!formData.fileName) {
+      alert('Пожалуйста, загрузите изображение рецепта');
+      return;
+    }
     
     for (const ingredient of formData.ingredients) {
       if (!ingredient.ingredientName.trim()) {
@@ -156,20 +175,24 @@ export default function AddRecipeCard({ onCancel, onSuccess }) {
           }
           
           try {
-            const existingIngredients = await ingredientService.getIngredientByName(ingredient.ingredientName);
-            
-            if (existingIngredients && existingIngredients.length > 0) {
+            const existingIngredients = await ingredientService.getIngredientByName(ingredient.ingredientName.trim());
+          
+            if (existingIngredients && existingIngredients.data.length > 0) {
               return {
-                ingredientId: existingIngredients[0].id,
+                ingredientId: existingIngredients.data[0].id,
                 weight: ingredient.weight
               };
             } else {
               const newIngredient = await ingredientService.createIngredient({
-                name: ingredient.ingredientName.trim()
+                name: ingredient.ingredientName.trim(),
+                protein: 0,
+                fats: 0,
+                carbs: 0,
+                calories: 0,
               });
-              
+
               return {
-                ingredientId: newIngredient.id,
+                ingredientId: newIngredient.data,
                 weight: ingredient.weight
               };
             }
@@ -180,14 +203,27 @@ export default function AddRecipeCard({ onCancel, onSuccess }) {
         })
       );
 
+      const userData = localStorage.getItem('user');
+      let userId = null;
+      if (userData) {
+        try {
+          const user = JSON.parse(userData);
+          userId = user.id;
+        } catch (error) {
+          console.error('Error parsing user data:', error);
+        }
+      }
+
       const recipeData = {
         name: formData.name.trim(),
         servingsNumber: formData.servingsNumber,
         instruction: formData.instruction.trim(),
         ingredients: ingredientsToSend,
-        fileName: ''
+        fileName: formData.fileName, 
+        userId: userId 
       };
 
+      console.log('Отправляемые данные рецепта:', recipeData);
       const result = await RecipeService.createRecipe(recipeData);
       
       setFormData({
@@ -222,6 +258,14 @@ export default function AddRecipeCard({ onCancel, onSuccess }) {
     <div className="add-recipe-card">
       <div className="recipe-form-container">
         <h2>Добавить новый рецепт</h2>
+
+        <UploadImage 
+          onUploadSuccess={handleImageUploadSuccess}
+          onUploadError={handleImageUploadError}
+          buttonText="Загрузить изображение"
+          maxSizeMB={2}
+        />
+        
         <form onSubmit={handleSubmit} className="recipe-form">
           <div className="form-group">
             <label htmlFor="name">Название рецепта</label>

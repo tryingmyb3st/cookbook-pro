@@ -17,7 +17,7 @@ export default function MainPage() {
         setError(null);
         try {
             const fetchedRecipes = [];
-            for (let i = 1; i <= 3; i++) {
+            for (let i = 1; i <= 10; i++) {
                 const recipe = await RecipeService.getRecipeById(i);
                 if (recipe) {
                     fetchedRecipes.push(recipe);

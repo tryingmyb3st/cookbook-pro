@@ -37,7 +37,7 @@ public class IngredientRepository(CookbookDbContext context)
                 Fats = 0,
                 Carbs = 0,
                 Calories = 0,
-                UserId = 0,
+                UserId = 1,
             };
             await _context.Ingredients.AddAsync(ingredient);
             ingredients.Add(ingredient);

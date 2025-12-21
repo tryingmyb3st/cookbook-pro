@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/cookbook': {
-        target: 'https://localhost:5144', 
+        target: 'http://localhost:5144', 
         changeOrigin: true,
         secure: false,
       }

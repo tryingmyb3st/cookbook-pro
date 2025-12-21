@@ -15,7 +15,6 @@ export default function MyRecipesPage() {
   };
 
   const handleSuccess = (newRecipe) => {
-    console.log('Recipe created successfully:', newRecipe);
     setShowAddForm(false);
     setRefreshTrigger(prev => prev + 1);
   };

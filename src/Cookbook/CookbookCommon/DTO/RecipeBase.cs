@@ -13,4 +13,6 @@ public class RecipeBase
     public string Instruction { get; set; } = string.Empty;
 
     public string? FileName { get; set; } = string.Empty;
+
+    public long UserId { get; set; }
 }

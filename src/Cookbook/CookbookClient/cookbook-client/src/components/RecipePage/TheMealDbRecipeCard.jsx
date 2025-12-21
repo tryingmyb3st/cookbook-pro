@@ -116,13 +116,15 @@ export default function TheMealDbRecipeCard() {
   if (loading) return (
     <div className="recipe-page themealdb">
       <div className="recipe-header">
-        <button 
-          className='update-button' 
-          onClick={handleRefreshRecipe}
-          disabled={loading}
-        >
-          {loading ? 'Загрузка...' : 'Обновить рецепт'}
-        </button>
+        <div className="recipe-actions">
+          <button 
+            className='update-button' 
+            onClick={handleRefreshRecipe}
+            disabled={loading}
+          >
+            {loading ? 'Загрузка...' : 'Обновить рецепт'}
+          </button>
+        </div>
         <div className="loading-placeholder">
           <div className="loading-spinner"></div>
           <p>Загрузка случайного рецепта...</p>
@@ -137,13 +139,15 @@ export default function TheMealDbRecipeCard() {
   return (
     <div className="recipe-page themealdb">
       <div className="recipe-header">
-        <button 
-          className='update-button' 
-          onClick={handleRefreshRecipe}
-          disabled={loading}
-        >
-          {loading ? '...' : 'Обновить рецепт'}
-        </button>
+        <div className="recipe-actions">
+          <button 
+            className='update-button' 
+            onClick={handleRefreshRecipe}
+            disabled={loading}
+          >
+            {loading ? '...' : 'Обновить рецепт'}
+          </button>
+        </div>
         <img src={image || '/assets/default.png'} className="recipe-image" alt={recipe.name} />
         <div className="recipe-page-info">
           <div className="recipe-title-row">

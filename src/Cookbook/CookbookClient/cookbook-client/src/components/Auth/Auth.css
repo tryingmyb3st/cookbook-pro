@@ -21,7 +21,12 @@
     font-weight: 500;
 }
 
+.auth-form .auth-button:hover {
+    background-color: #f8b600ad;
+}
+
 .auth-form .auth-link {
+    margin-top: 10px;
     color: #333;
 }
 

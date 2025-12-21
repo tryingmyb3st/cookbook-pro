@@ -43,7 +43,6 @@ function Register() {
       const responseText = await response.text();
       
       if (response.ok) {
-        // Успешная регистрация
         let data = {};
         try {
           data = JSON.parse(responseText);
@@ -68,37 +67,28 @@ function Register() {
         navigate('/');
         window.location.reload();
       } else {
-        // Обработка ошибки
         let errorMessage = responseText;
         
         try {
-          // Пытаемся парсить JSON
           const errorData = JSON.parse(responseText);
           
-          // Если это массив с объектами, содержащими поле description
           if (Array.isArray(errorData)) {
-            // Берем первую ошибку и её description
             if (errorData[0] && errorData[0].description) {
               errorMessage = errorData[0].description;
             } else if (errorData[0] && errorData[0].message) {
               errorMessage = errorData[0].message;
             }
           }
-          // Если это объект с полем description
           else if (errorData.description) {
             errorMessage = errorData.description;
           }
-          // Если это объект с полем message
           else if (errorData.message) {
             errorMessage = errorData.message;
           }
-          // Если это старый формат с полем title
           else if (errorData.title) {
             errorMessage = errorData.title;
           }
         } catch (e) {
-          // Если не JSON, оставляем исходный текст
-          console.log('Ответ не JSON, используем текст как есть');
         }
         
         setError(errorMessage || `Ошибка регистрации: ${response.status}`);
@@ -117,14 +107,14 @@ function Register() {
         
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="fullName">Полное имя</label>
+            <label htmlFor="fullName">Имя</label>
             <input
               type="text"
               id="fullName"
               name="fullName"
               value={formData.fullName}
               onChange={handleChange}
-              placeholder="Иван Иванов"
+              placeholder="Максим Хорошкин"
               required
             />
           </div>

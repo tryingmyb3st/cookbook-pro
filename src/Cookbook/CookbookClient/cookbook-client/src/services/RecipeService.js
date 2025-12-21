@@ -20,12 +20,19 @@ export const RecipeService = {
     return response.data;
   },
 
+  // Получить случайный рецепт из TheMealDB
   async getRandomFromTheMealDB() {
     try {
       const response = await api.get('/cookbook/Recipe/GetRandomFromTheMealDB');
       return response.data; 
     } catch (error) {
       throw error;
+    }
+  },
+
+  // Удалить рецепт по ID
+  async deleteRecipe(id) {
+    const response = await api.delete(`/cookbook/Recipe/Delete?id=${encodeURIComponent(id)}`);
+    return response.data;
   }
-}
 };

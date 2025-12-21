@@ -135,7 +135,6 @@ export default function AddRecipeCard({ onCancel, onSuccess }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Валидация
     if (!formData.name.trim()) {
       alert('Пожалуйста, введите название рецепта');
       return;
@@ -209,20 +208,18 @@ export default function AddRecipeCard({ onCancel, onSuccess }) {
         }
       }
 
-      // Формируем данные рецепта
       const recipeData = {
         name: formData.name.trim(),
         servingsNumber: formData.servingsNumber,
         instruction: formData.instruction.trim(),
         ingredients: ingredientsToSend,
-        fileName: formData.fileName, // Теперь это зашифрованное имя от сервера
+        ...(formData.fileName && { fileName: formData.fileName }),
         userId: userId 
       };
 
       console.log('Отправляемые данные рецепта:', recipeData);
       const result = await RecipeService.createRecipe(recipeData);
       
-      // Сброс формы
       setFormData({
         name: '',
         servingsNumber: 1,
@@ -233,10 +230,7 @@ export default function AddRecipeCard({ onCancel, onSuccess }) {
       
       if (onSuccess) {
         onSuccess(result);
-      }
-      
-      alert('Рецепт успешно создан!');
-      
+      }      
     } catch (error) {
       console.error('Error creating recipe:', error);
       alert('Ошибка при создании рецепта: ' + (error.response?.data?.message || error.message));
@@ -263,6 +257,9 @@ export default function AddRecipeCard({ onCancel, onSuccess }) {
             buttonText="Загрузить изображение"
             maxSizeMB={2}
           />
+          {formData.fileName && (
+            <p className="image-upload-success">Изображение загружено</p>
+          )}
         </div>
 
         <form onSubmit={handleSubmit} className="recipe-form">

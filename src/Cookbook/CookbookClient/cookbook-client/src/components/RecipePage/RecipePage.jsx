@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useRecipeImage } from '../../hooks/useRecipeImage';
 import IngredientCard from '../IngredientCard/IngredientCard';
 import { RecipeService } from '../../services/RecipeService';
+import { AuthService } from '../../services/AuthService';
 import './RecipePage.css';
 
 export default function RecipePage() {
@@ -12,14 +13,39 @@ export default function RecipePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [instructionsList, setInstructionsList] = useState([]);
+  const [currentUserId, setCurrentUserId] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState(null);
 
   const { image: recipeImage } = useRecipeImage(recipe);
+
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      try {
+        const user = JSON.parse(userData);
+        if (user.id) {
+          setCurrentUserId(user.id);
+        }
+      } catch (error) {
+        console.error('Ошибка при чтении данных пользователя:', error);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const loadRecipe = async () => {
       try {
         const data = await RecipeService.getRecipeById(id);
-        setRecipe(data);
+
+        const userInfo = await AuthService.getUserInfo(data.userId);
+        
+        const updatedRecipe = {
+          ...data,
+          userName: userInfo.userName.split('@')[0],
+        };
+        
+        setRecipe(updatedRecipe);
         
         if (data.instructions && data.instructions.length > 0) {
           setInstructionsList(data.instructions);
@@ -31,7 +57,7 @@ export default function RecipePage() {
           setInstructionsList(parsedInstructions);
         }
       } catch (err) {
-        console.error(err);
+        console.error('Ошибка при загрузке рецепта:', err);
         setError('Ошибка при загрузке рецепта');
       } finally {
         setLoading(false);
@@ -40,6 +66,45 @@ export default function RecipePage() {
     loadRecipe();
   }, [id]);
 
+  const handleDeleteRecipe = async () => {
+    if (!window.confirm('Вы уверены, что хотите удалить этот рецепт?')) {
+      return;
+    }
+
+    setIsDeleting(true);
+    setDeleteError(null);
+
+    try {
+      await RecipeService.deleteRecipe(id);
+      
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        try {
+          const user = JSON.parse(userData);
+          const userRecipesKey = `userRecipes_${user.id}`;
+          const userRecipes = localStorage.getItem(userRecipesKey);
+          if (userRecipes) {
+            const recipes = JSON.parse(userRecipes);
+            const updatedRecipes = recipes.filter(recipe => recipe.id !== parseInt(id));
+            localStorage.setItem(userRecipesKey, JSON.stringify(updatedRecipes));
+          }
+        } catch (error) {
+          console.error('Ошибка при обновлении localStorage:', error);
+        }
+      }
+
+      navigate('/');
+      
+    } catch (err) {
+      console.error('Ошибка при удалении рецепта:', err);
+      setDeleteError('Не удалось удалить рецепт. Попробуйте еще раз.');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const isRecipeOwner = currentUserId && recipe && recipe.userId === currentUserId;
+
   if (loading) return <div className="recipe-page">Загрузка...</div>;
   if (error) return <div className="recipe-page">{error}</div>;
   if (!recipe) return <div className="recipe-page">Рецепт не найден</div>;
@@ -47,7 +112,19 @@ export default function RecipePage() {
   return (
     <div className="recipe-page">
       <div className="recipe-header">
-        <button className="back-button" onClick={() => navigate(-1)}>Назад</button>
+        <div className="recipe-actions">
+          {isRecipeOwner && (
+            <button 
+              className="delete-button" 
+              onClick={handleDeleteRecipe}
+              disabled={isDeleting}
+            >
+              {isDeleting ? 'Удаление...' : 'Удалить'}
+            </button>
+          )}
+          <button className="back-button" onClick={() => navigate(-1)}>Назад</button>
+        </div>
+        
         <img 
           src={recipeImage} 
           alt={recipe.name}
@@ -55,7 +132,7 @@ export default function RecipePage() {
         />
         <div className="recipe-page-info">
           <h1>{recipe.name}</h1>
-          <p className="recipe-author">{recipe.author ? `@${recipe.author}` : "@author"}</p>
+          <p className="recipe-author">{recipe.userName ? `${recipe.userName}` : "@author"}</p>
           <p className="recipe-weight">{recipe.weight ? `${recipe.weight} г` : "200 г"}</p>
           
           <div className="recipe-instructions-summary">
@@ -72,6 +149,12 @@ export default function RecipePage() {
           </div>
         </div>
       </div>
+      
+      {deleteError && (
+        <div className="error-message">
+          {deleteError}
+        </div>
+      )}
       
       <div className="recipe-body">
         <div className="ingredients">

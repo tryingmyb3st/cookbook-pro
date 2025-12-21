@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import './Menu.css'
+import Logout from '../Auth/Logout';
 
 export default function Header() {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ export default function Header() {
       <ul>
         <li onClick={handleAllRecipesClick}>Все рецепты</li>
         <li onClick={handleMyRecipesClick}>Мои рецепты</li>
+        <Logout/>
       </ul>
     </div>
   );

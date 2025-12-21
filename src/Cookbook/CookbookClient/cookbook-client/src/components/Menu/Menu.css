@@ -31,3 +31,15 @@
   background-color: #F8B600;
   color: white;
 }
+
+.logout-button {
+  margin: 10px;
+  margin-top: 20px;
+  color: #9B93A9;
+  font-weight: 500;
+}
+
+.logout-button:hover {
+  cursor: pointer;
+  color: #F8B600;
+}

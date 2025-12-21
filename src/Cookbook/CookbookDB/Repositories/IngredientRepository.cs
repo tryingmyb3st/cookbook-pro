@@ -37,6 +37,7 @@ public class IngredientRepository(CookbookDbContext context)
                 Fats = 0,
                 Carbs = 0,
                 Calories = 0,
+                UserId = 0,
             };
             await _context.Ingredients.AddAsync(ingredient);
             ingredients.Add(ingredient);
@@ -46,7 +47,7 @@ public class IngredientRepository(CookbookDbContext context)
         return ingredients;
     }
 
-    public async Task<long> AddIngredientAsync(CookbookCommon.DTO.IngredientCreate ingredientCreate)
+    public async Task<long> AddIngredientAsync(CookbookCommon.DTO.IngredientCreate ingredientCreate, long userId)
     {
         var ingredient = new Ingredient
         {
@@ -55,6 +56,7 @@ public class IngredientRepository(CookbookDbContext context)
             Fats = ingredientCreate.Fats,
             Carbs = ingredientCreate.Carbs,
             Calories = ingredientCreate.Calories,
+            UserId = userId,
         };
 
         await _context.Ingredients.AddAsync(ingredient);

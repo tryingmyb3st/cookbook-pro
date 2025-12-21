@@ -1,12 +1,19 @@
 ﻿using CookbookDB;
+using CookbookDB.Models;
 using CookbookDB.Repositories;
+using CookbookDB.Services;
 using CookbookFileStorage;
 using CookbookTheMealDB;
 using CookbookWebApi.Mapping;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Minio;
+using System.Reflection;
+using System.Text;
 using MinioConfig = CookbookFileStorage.MinioConfig;
 
 namespace CookbookWebApi
@@ -22,6 +29,37 @@ namespace CookbookWebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddIdentity<User, IdentityRole<long>>()
+    .AddEntityFrameworkStores<CookbookDbContext>()
+    .AddDefaultTokenProviders();
+
+            var jwtSettings = Configuration.GetSection("Jwt");
+            var key = Encoding.ASCII.GetBytes(jwtSettings["Secret"]!);
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = true,
+                    ValidIssuer = jwtSettings["Issuer"],
+                    ValidateAudience = true,
+                    ValidAudience = jwtSettings["Audience"],
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
+
+            services.AddScoped<IJwtTokenService, JwtTokenService>();
+
             services.AddCors(options =>
             {
                 options.AddPolicy("ReactApp", policy =>
@@ -69,7 +107,39 @@ namespace CookbookWebApi
                     Description = "API для кулинарных рецептов"
                 });
 
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. <br><br>",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+
                 c.OperationFilter<MinioFileOperationFilter>();
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                if (File.Exists(xmlPath))
+                {
+                    c.IncludeXmlComments(xmlPath);
+                }
             });
         }
 
@@ -128,6 +198,7 @@ namespace CookbookWebApi
             app.UseStaticFiles();
             app.UseRouting();
             app.UseCors("ReactApp");
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

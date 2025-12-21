@@ -3,6 +3,7 @@ using System;
 using CookbookDB;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CookbookDB.Migrations
 {
     [DbContext(typeof(CookbookDbContext))]
-    partial class CookbookDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251220204455_AddIdentityTables")]
+    partial class AddIdentityTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -59,13 +62,8 @@ namespace CookbookDB.Migrations
                         .HasColumnName("protein")
                         .HasComment("белки");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
                     b.HasKey("Id")
                         .HasName("ingredient_pk");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("ingredient", "cookbook", t =>
                         {
@@ -104,9 +102,6 @@ namespace CookbookDB.Migrations
                         .HasColumnName("servings_number")
                         .HasComment("количество порций");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
                     b.Property<decimal?>("Weight")
                         .HasColumnType("numeric")
                         .HasColumnName("weight")
@@ -114,8 +109,6 @@ namespace CookbookDB.Migrations
 
                     b.HasKey("Id")
                         .HasName("recipe_pk");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("recipe", "cookbook", t =>
                         {
@@ -345,24 +338,6 @@ namespace CookbookDB.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("CookbookDB.Models.Ingredient", b =>
-                {
-                    b.HasOne("CookbookDB.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("CookbookDB.Models.Recipe", b =>
-                {
-                    b.HasOne("CookbookDB.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("CookbookDB.Models.RecipeIngredient", b =>

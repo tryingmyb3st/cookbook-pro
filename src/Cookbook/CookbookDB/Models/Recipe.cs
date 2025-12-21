@@ -35,5 +35,10 @@ public partial class Recipe
     /// </summary>
     public string? FileName { get; set; }
 
+    /// <summary>
+    /// идентификатор пользователя
+    /// </summary>
+    public long UserId { get; set; }
+
     public virtual ICollection<RecipeIngredient> RecipeIngredients { get; set; } = new List<RecipeIngredient>();
 }

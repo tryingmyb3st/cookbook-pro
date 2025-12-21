@@ -35,5 +35,10 @@ public partial class Ingredient
     /// </summary>
     public decimal? Calories { get; set; }
 
+    /// <summary>
+    /// идентификатор пользователя
+    /// </summary>
+    public long UserId { get; set; }
+
     public virtual ICollection<RecipeIngredient> RecipeIngredients { get; set; } = new List<RecipeIngredient>();
 }

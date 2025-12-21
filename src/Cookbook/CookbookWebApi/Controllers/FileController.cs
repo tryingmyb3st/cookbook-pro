@@ -1,11 +1,13 @@
 ﻿using CookbookFileStorage;
 using CookbookWebApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CookbookWebApi.Controllers;
 
 [ApiController]
 [Route("cookbook/[controller]/[action]")]
+[Authorize]
 public class FileController(
     IFileService fileService,
     ILogger<FileController> logger): ControllerBase

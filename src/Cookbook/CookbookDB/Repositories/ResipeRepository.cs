@@ -26,7 +26,7 @@ public class RecipeRepository(CookbookDbContext context, IFileService fileServic
             .ToArrayAsync();
     }
 
-    public async Task<long> AddRecipeAsync(RecipeCreate recipeCreate)
+    public async Task<long> AddRecipeAsync(RecipeCreate recipeCreate, long userId)
     {
         var ingredientIds = recipeCreate.Ingredients.Select(i => i.IngredientId!.Value);
         var existingIngredients = _context.Ingredients.Where(i => ingredientIds.Contains(i.Id));
@@ -53,6 +53,7 @@ public class RecipeRepository(CookbookDbContext context, IFileService fileServic
             Instruction = recipeCreate.Instruction,
             ServingsNumber = recipeCreate.ServingsNumber,
             FileName = recipeCreate.FileName,
+            UserId = userId,
         };
 
         await _context.Recipes.AddAsync(recipe);
@@ -71,7 +72,7 @@ public class RecipeRepository(CookbookDbContext context, IFileService fileServic
         return recipe.Id;
     }
 
-    public async Task UpdateRecipeAsync(RecipeUpdate recipeUpdate)
+    public async Task UpdateRecipeAsync(RecipeUpdate recipeUpdate, long userId)
     {
         var existingRecipe = await _context.Recipes
             .Include(r => r.RecipeIngredients)
@@ -81,6 +82,11 @@ public class RecipeRepository(CookbookDbContext context, IFileService fileServic
         if (existingRecipe == null)
         {
             throw new Exception($"Не найден рецепт по идентификатору {recipeUpdate.Id}");
+        }
+
+        if (existingRecipe.UserId != userId)
+        {
+            throw new Exception($"Нельзя изменить рецепт, созданный другим пользователем");
         }
 
         var ingredientIds = recipeUpdate.Ingredients.Select(i => i.IngredientId!.Value);
@@ -124,7 +130,7 @@ public class RecipeRepository(CookbookDbContext context, IFileService fileServic
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteRecipeAsync(long id)
+    public async Task DeleteRecipeAsync(long id, long userId)
     {
         var existingRecipe = await _context.Recipes
             .Include(r => r.RecipeIngredients)
@@ -134,6 +140,11 @@ public class RecipeRepository(CookbookDbContext context, IFileService fileServic
         if (existingRecipe == null)
         {
             throw new Exception($"Не найден рецепт по идентификатору {id}");
+        }
+
+        if (existingRecipe.UserId != userId)
+        {
+            throw new Exception($"Нельзя удалить рецепт, созданный другим пользователем");
         }
 
         if (!string.IsNullOrEmpty(existingRecipe.FileName))

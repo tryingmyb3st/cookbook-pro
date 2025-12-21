@@ -1,19 +1,10 @@
-﻿namespace CookbookDB.Models;
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace CookbookDB.Models;
 
 /// <summary>
-/// пользователи
+/// Пользователи
 /// </summary>
-public partial class User
+public partial class User: IdentityUser<long>
 {
-    /// <summary>
-    /// идентификатор пользователя
-    /// </summary>
-    public long Id { get; set; }
-
-    /// <summary>
-    /// имя пользователя
-    /// </summary>
-    public string Name { get; set; } = null!;
-
-    public virtual ICollection<List> Lists { get; set; } = new List<List>();
 }

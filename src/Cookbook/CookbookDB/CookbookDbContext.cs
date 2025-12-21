@@ -26,20 +26,6 @@ public partial class CookbookDbContext : IdentityDbContext<User, IdentityRole<lo
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<Recipe>()
-            .HasOne<User>()
-            .WithMany()
-            .HasForeignKey(r => r.UserId)
-            .OnDelete(DeleteBehavior.Cascade)
-            .IsRequired();
-
-        modelBuilder.Entity<Ingredient>()
-            .HasOne<User>()
-            .WithMany()
-            .HasForeignKey(i => i.UserId)
-            .OnDelete(DeleteBehavior.Cascade)
-            .IsRequired();
-
         modelBuilder.Entity<Ingredient>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("ingredient_pk");
@@ -96,6 +82,9 @@ public partial class CookbookDbContext : IdentityDbContext<User, IdentityRole<lo
                .HasComment("имя файла")
                .HasColumnType("character varying")
                .HasColumnName("file_name");
+            entity.Property(e => e.UserId)
+                .HasComment("идентификатор пользователя")
+                .HasColumnName("UserId");
         });
 
         modelBuilder.Entity<RecipeIngredient>(entity =>

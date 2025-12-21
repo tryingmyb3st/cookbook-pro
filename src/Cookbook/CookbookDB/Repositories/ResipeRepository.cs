@@ -12,6 +12,7 @@ public class RecipeRepository(CookbookDbContext context, IFileService fileServic
     public async Task<Recipe?> Get(int id)
     {
         return await _context.Recipes
+            .Include(r => r.User)
             .Include(r => r.RecipeIngredients)
             .ThenInclude(ri => ri.Ingredient)
             .FirstOrDefaultAsync(r => r.Id == id);

@@ -8,6 +8,8 @@ namespace CookbookWebApi.Mapping
         public RecipeProfile()
         {
             CreateMap<Recipe, CookbookCommon.DTO.Recipe>()
+                .ForMember(dest => dest.UserName,
+                    opt => opt.MapFrom(src => src.User.UserName))
                 .ForMember(dest => dest.Ingredients,
                     opt => opt.MapFrom((src, dest, destMember, context) => MapIngredients(src)));
         }

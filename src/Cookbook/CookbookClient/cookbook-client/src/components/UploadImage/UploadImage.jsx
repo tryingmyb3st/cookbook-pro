@@ -3,7 +3,7 @@ import { FileService } from '../../services/FileService';
 import './UploadImage.css';
 
 const UploadImage = ({ 
-  onUploadSuccess,
+  onUploadSuccess,  // Теперь будет получать весь response от сервера
   onUploadError,
   buttonText = "Загрузить изображение",
   accept = "image/*",
@@ -13,7 +13,7 @@ const UploadImage = ({
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
-  const [uploadedFileName, setUploadedFileName] = useState('');
+  const [uploadedData, setUploadedData] = useState(null); // Теперь храним весь response
   const fileInputRef = useRef(null);
 
   const handleFileSelect = (e) => {
@@ -21,7 +21,7 @@ const UploadImage = ({
     if (!file) return;
 
     setError('');
-    setUploadedFileName('');
+    setUploadedData(null);
     
     if (!file.type.startsWith('image/')) {
       setError('Пожалуйста, выберите изображение');
@@ -51,13 +51,17 @@ const UploadImage = ({
     setError('');
 
     try {
-      const result = await FileService.uploadImage(selectedFile);
+      // Получаем весь response от сервера
+      const response = await FileService.uploadImage(selectedFile);
       
-      const fileName = result?.fileName || selectedFile.name;
-      setUploadedFileName(fileName);
+      console.log('Ответ от сервера при загрузке изображения:', response);
       
+      // Сохраняем весь response
+      setUploadedData(response);
+      
+      // Передаем весь response в колбэк
       if (onUploadSuccess) {
-        onUploadSuccess(fileName, selectedFile);
+        onUploadSuccess(response, selectedFile);
       }
 
       setSelectedFile(null);
@@ -77,7 +81,7 @@ const UploadImage = ({
 
   const handleRemoveFile = () => {
     setSelectedFile(null);
-    setUploadedFileName('');
+    setUploadedData(null);
     setError('');
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -101,7 +105,7 @@ const UploadImage = ({
         disabled={uploading}
       />
 
-      {!uploadedFileName && !selectedFile && (
+      {!uploadedData && !selectedFile && (
         <button
           type="button"
           onClick={handleButtonClick}
@@ -141,9 +145,11 @@ const UploadImage = ({
         </div>
       )}
 
-      {uploadedFileName && !selectedFile && (
+      {uploadedData && !selectedFile && (
         <div className="upload-image__uploaded-info">
-          <span className="upload-image__uploaded-name">✓ {uploadedFileName}</span>
+          <span className="upload-image__uploaded-name">
+            {uploadedData.fileName || 'Файл загружен'}
+          </span>
           <button
             type="button"
             onClick={handleRemoveFile}

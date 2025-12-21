@@ -17,11 +17,10 @@ export default function AddRecipeCard({ onCancel, onSuccess }) {
   const [searchTimeout, setSearchTimeout] = useState(null);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
 
-  const handleImageUploadSuccess = (fileName) => {
-    console.log('Изображение загружено, fileName:', fileName);
+  const handleImageUploadSuccess = (response, file) => {    
     setFormData(prev => ({
       ...prev,
-      fileName: fileName
+      fileName: response
     }));
   };
 
@@ -136,6 +135,7 @@ export default function AddRecipeCard({ onCancel, onSuccess }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Валидация
     if (!formData.name.trim()) {
       alert('Пожалуйста, введите название рецепта');
       return;
@@ -143,11 +143,6 @@ export default function AddRecipeCard({ onCancel, onSuccess }) {
     
     if (!formData.instruction.trim()) {
       alert('Пожалуйста, введите инструкцию приготовления');
-      return;
-    }
-
-    if (!formData.fileName) {
-      alert('Пожалуйста, загрузите изображение рецепта');
       return;
     }
     
@@ -214,18 +209,20 @@ export default function AddRecipeCard({ onCancel, onSuccess }) {
         }
       }
 
+      // Формируем данные рецепта
       const recipeData = {
         name: formData.name.trim(),
         servingsNumber: formData.servingsNumber,
         instruction: formData.instruction.trim(),
         ingredients: ingredientsToSend,
-        fileName: formData.fileName, 
+        fileName: formData.fileName, // Теперь это зашифрованное имя от сервера
         userId: userId 
       };
 
       console.log('Отправляемые данные рецепта:', recipeData);
       const result = await RecipeService.createRecipe(recipeData);
       
+      // Сброс формы
       setFormData({
         name: '',
         servingsNumber: 1,
@@ -259,13 +256,15 @@ export default function AddRecipeCard({ onCancel, onSuccess }) {
       <div className="recipe-form-container">
         <h2>Добавить новый рецепт</h2>
 
-        <UploadImage 
-          onUploadSuccess={handleImageUploadSuccess}
-          onUploadError={handleImageUploadError}
-          buttonText="Загрузить изображение"
-          maxSizeMB={2}
-        />
-        
+        <div className="form-group">
+          <UploadImage 
+            onUploadSuccess={handleImageUploadSuccess}
+            onUploadError={handleImageUploadError}
+            buttonText="Загрузить изображение"
+            maxSizeMB={2}
+          />
+        </div>
+
         <form onSubmit={handleSubmit} className="recipe-form">
           <div className="form-group">
             <label htmlFor="name">Название рецепта</label>

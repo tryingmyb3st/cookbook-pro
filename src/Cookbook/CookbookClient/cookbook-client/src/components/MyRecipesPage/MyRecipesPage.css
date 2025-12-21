@@ -4,6 +4,7 @@
 
 .my-recipes-page-content {
     margin: 20px;
+    margin-top: 40px;
 }
 
 .my-recipes-page h2 {
@@ -32,15 +33,7 @@
 .page-content {
     display: flex;
     gap: 20px;
-}
-
-.page-content > div:first-child {
-    flex: 1;
-    min-height: 400px;
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    justify-content: space-between;
 }
 
 .my-recipes-page-add-recipe-card {
@@ -50,4 +43,9 @@
 
 .my-recipes-page-add-recipe-card:empty {
     display: none;
+}
+
+.no-recipes-message {
+    justify-content: center;
+    color: #9B93A9;
 }

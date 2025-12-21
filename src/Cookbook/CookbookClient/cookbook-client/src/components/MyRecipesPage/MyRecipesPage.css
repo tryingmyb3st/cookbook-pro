@@ -1,0 +1,54 @@
+.my-recipes-page {
+    background-color: #F5F5F5;
+}
+
+.my-recipes-page-content {
+    margin: 20px;
+}
+
+.my-recipes-page h2 {
+    margin: 0;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.add-new-recipe {
+    cursor: pointer;
+    color: #9B93A9;
+    background-color: transparent;
+    border: 0;
+    font-size: 14px;
+}
+
+.add-new-recipe:hover {
+    color: #F8B600;
+}
+
+.page-content {
+    display: flex;
+    gap: 20px;
+}
+
+.page-content > div:first-child {
+    flex: 1;
+    min-height: 400px;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.my-recipes-page-add-recipe-card {
+    top: 20px;
+    height: fit-content;
+}
+
+/* Когда форма скрыта */
+.my-recipes-page-add-recipe-card:empty {
+    display: none;
+}

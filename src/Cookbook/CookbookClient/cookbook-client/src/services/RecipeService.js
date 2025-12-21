@@ -1,6 +1,6 @@
 import { api } from './api';
 
-export const ingredientService = {
+export const RecipeService = {
   // Получить рецепт по ID
   async getRecipeById(id) {
     const response = await api.get(`/cookbook/Recipe/Get?id=${encodeURIComponent(id)}`);
@@ -14,18 +14,17 @@ export const ingredientService = {
   },
 
   // Создать новый рецепт
-  async createRecipe(ingredientData) {
-    const response = await api.post('/cookbook/Recipe/Create', ingredientData);
+  async createRecipe(recipeData) {
+    const response = await api.post('/cookbook/Recipe/Create', recipeData);
     return response.data;
   },
 
-  async getRecipeImage(id) {
+  async getRandomFromTheMealDB() {
     try {
-      const imageModule = await import(`../assets/recipes/${id}.jpg`);
-      return imageModule.default;
+      const response = await api.get('/cookbook/Recipe/GetRandomFromTheMealDB');
+      return response.data; 
     } catch (error) {
-      const defaultImage = await import('../assets/recipes/default.jpg');
-      return defaultImage.default;
-    }
+      throw error;
   }
+}
 };

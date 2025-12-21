@@ -29,7 +29,7 @@ function IngredientList() {
   if (!ingredient) return <div>Ингредиент не найден</div>;
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+    <div>
       <h2>Ингредиент</h2>
       <div style={{ 
         border: '1px solid #ddd',

@@ -10,3 +10,19 @@
     display: flex;
     gap: 20px;
 }
+
+.error {
+    display: flex;
+    font-weight: 400;
+    color: #9B93A9;
+    justify-content: center;
+    text-align: center;
+}
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}

@@ -1,12 +1,23 @@
+import { useNavigate } from 'react-router-dom';
 import './Menu.css'
 
 export default function Header() {
-    return (
+  const navigate = useNavigate();
+
+  const handleAllRecipesClick = () => {
+    navigate('/');
+  };
+
+  const handleMyRecipesClick = () => {
+    navigate('/my');
+  }
+
+  return (
     <div className="menu">
       <h2>Cookbook</h2>
       <ul>
-        <li>Все рецепты</li>
-        <li>Сохраненное</li>
+        <li onClick={handleAllRecipesClick}>Все рецепты</li>
+        <li onClick={handleMyRecipesClick}>Мои рецепты</li>
       </ul>
     </div>
   );

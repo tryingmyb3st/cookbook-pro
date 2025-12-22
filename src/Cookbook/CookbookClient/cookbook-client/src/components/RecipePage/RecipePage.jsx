@@ -82,11 +82,24 @@ export default function RecipePage() {
         try {
           const user = JSON.parse(userData);
           const userRecipesKey = `userRecipes_${user.id}`;
-          const userRecipes = localStorage.getItem(userRecipesKey);
-          if (userRecipes) {
-            const recipes = JSON.parse(userRecipes);
-            const updatedRecipes = recipes.filter(recipe => recipe.id !== parseInt(id));
-            localStorage.setItem(userRecipesKey, JSON.stringify(updatedRecipes));
+          const userRecipesData = localStorage.getItem(userRecipesKey);
+          
+          if (userRecipesData) {
+            const parsedData = JSON.parse(userRecipesData);
+            
+            const updatedRecipes = parsedData.recipes.filter(recipe => recipe.id !== parseInt(id));
+            
+            const updatedRecipeIds = parsedData.recipeIds.filter(recipeId => recipeId !== parseInt(id));
+            
+            const updatedData = {
+              ...parsedData,
+              userId: user.id,
+              recipes: updatedRecipes,
+              recipeIds: updatedRecipeIds,
+              timestamp: Date.now()
+            };
+            
+            localStorage.setItem(userRecipesKey, JSON.stringify(updatedData));
           }
         } catch (error) {
           console.error('Ошибка при обновлении localStorage:', error);
@@ -97,7 +110,7 @@ export default function RecipePage() {
       
     } catch (err) {
       console.error('Ошибка при удалении рецепта:', err);
-      setDeleteError('Не удалось удалить рецепт. Попробуйте еще раз.');
+      setDeleteError('Не удалось удалить рецепта. Попробуйте еще раз.');
     } finally {
       setIsDeleting(false);
     }

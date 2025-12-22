@@ -5,6 +5,7 @@
 .my-recipes-page-content {
     margin: 20px;
     margin-top: 40px;
+    max-width: 100%;
 }
 
 .my-recipes-page h2 {
@@ -33,12 +34,28 @@
 .page-content {
     display: flex;
     gap: 20px;
-    justify-content: space-between;
+}
+
+.user-recipes-list {
+    flex: 1;
+}
+
+.recipes-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.recipe-card-container {
+    /* Если у RecipeCard есть свой контейнер или обертка */
+    flex: 0 0 auto;
 }
 
 .my-recipes-page-add-recipe-card {
+    position: sticky;
     top: 20px;
     height: fit-content;
+    min-width: 300px; /* Или другая подходящая ширина */
 }
 
 .my-recipes-page-add-recipe-card:empty {
@@ -47,5 +64,11 @@
 
 .no-recipes-message {
     justify-content: center;
+    color: #9B93A9;
+}
+
+.loading-state, .error-state {
+    text-align: center;
+    padding: 40px;
     color: #9B93A9;
 }

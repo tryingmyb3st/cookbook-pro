@@ -104,7 +104,7 @@ public partial class CookbookDbContext : IdentityDbContext<User, IdentityRole<lo
 
             entity.HasOne(d => d.Recipe).WithMany(p => p.RecipeIngredients)
                 .HasForeignKey(d => d.RecipeId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("recipe_ingredients_recipe_id_fk");
         });
 

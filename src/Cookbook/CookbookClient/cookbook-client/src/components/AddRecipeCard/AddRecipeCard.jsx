@@ -257,9 +257,6 @@ export default function AddRecipeCard({ onCancel, onSuccess }) {
             buttonText="Загрузить изображение"
             maxSizeMB={2}
           />
-          {formData.fileName && (
-            <p className="image-upload-success">Изображение загружено</p>
-          )}
         </div>
 
         <form onSubmit={handleSubmit} className="recipe-form">

@@ -40,7 +40,7 @@ public partial class Recipe
     /// </summary>
     public long UserId { get; set; }
 
-    public virtual User User { get; set; } = new User();
+    public virtual User User { get; set; } = null!;
 
     public virtual ICollection<RecipeIngredient> RecipeIngredients { get; set; } = new List<RecipeIngredient>();
 }

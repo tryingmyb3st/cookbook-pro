@@ -49,9 +49,11 @@
 ![Context diagram](./assets/С4_1.png)
 
 * <b>Контейнеры</b>
+\
 ![Container diagram](./assets/C4_2.png)
 
 * <b>Компоненты</b>
+\
 ![Components diagram](./assets/C4_3.png)
 
 ### Контракты API

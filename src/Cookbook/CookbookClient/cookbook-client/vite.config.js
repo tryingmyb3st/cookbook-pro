@@ -4,9 +4,11 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
+    host: true,
+    port: 3000,
     proxy: {
       '/cookbook': {
-        target: 'http://localhost:5144', 
+        target: 'http://cookbook-backend:5000', 
         changeOrigin: true,
         secure: false,
       }
